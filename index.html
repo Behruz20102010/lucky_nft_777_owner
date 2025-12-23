@@ -1,0 +1,898 @@
+<!DOCTYPE html>
+<html lang="uz">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gift Case</title>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            min-height: 100vh;
+            padding-bottom: 80px;
+        }
+
+        .header {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 15px 20px;
+            text-align: center;
+            backdrop-filter: blur(10px);
+        }
+
+        .header h1 {
+            font-size: 24px;
+            margin-bottom: 10px;
+        }
+
+        .balance-display {
+            background: rgba(255, 255, 255, 0.2);
+            padding: 10px 20px;
+            border-radius: 50px;
+            display: inline-block;
+            font-size: 18px;
+            font-weight: bold;
+        }
+
+        .content {
+            padding: 20px;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        /* CASES SECTION */
+        .cases-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+        }
+
+        .case-card {
+            background: rgba(255, 255, 255, 0.15);
+            border-radius: 15px;
+            padding: 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            backdrop-filter: blur(10px);
+        }
+
+        .case-card:hover {
+            transform: translateY(-5px);
+            background: rgba(255, 255, 255, 0.25);
+        }
+
+        .case-icon {
+            font-size: 50px;
+            margin-bottom: 10px;
+        }
+
+        .case-price {
+            font-size: 22px;
+            font-weight: bold;
+            color: #ffd700;
+            margin-bottom: 5px;
+        }
+
+        .case-name {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+
+        /* NEWS SECTION */
+        .news-list {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .news-item {
+            background: rgba(255, 255, 255, 0.15);
+            border-radius: 15px;
+            padding: 20px;
+            backdrop-filter: blur(10px);
+        }
+
+        .news-date {
+            color: #ffd700;
+            font-size: 12px;
+            margin-bottom: 5px;
+        }
+
+        .news-title {
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .news-text {
+            opacity: 0.9;
+            line-height: 1.5;
+        }
+
+        .news-empty {
+            text-align: center;
+            padding: 40px 20px;
+            opacity: 0.6;
+        }
+
+        /* PROFILE SECTION */
+        .profile-header {
+            background: rgba(255, 255, 255, 0.15);
+            border-radius: 15px;
+            padding: 25px;
+            text-align: center;
+            margin-bottom: 20px;
+            backdrop-filter: blur(10px);
+        }
+
+        .profile-avatar {
+            font-size: 60px;
+            margin-bottom: 10px;
+        }
+
+        .profile-name {
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .profile-username {
+            opacity: 0.7;
+            font-size: 14px;
+        }
+
+        .balance-card {
+            background: rgba(255, 255, 255, 0.15);
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 20px;
+            backdrop-filter: blur(10px);
+        }
+
+        .balance-title {
+            font-size: 14px;
+            opacity: 0.7;
+            margin-bottom: 10px;
+        }
+
+        .balance-amount {
+            font-size: 32px;
+            font-weight: bold;
+            color: #ffd700;
+            margin-bottom: 15px;
+        }
+
+        .topup-btn {
+            background: linear-gradient(135deg, #ffd700 0%, #ffed4e 100%);
+            color: #333;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 50px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            width: 100%;
+            transition: all 0.3s;
+        }
+
+        .topup-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 5px 20px rgba(255, 215, 0, 0.4);
+        }
+
+        .prizes-section {
+            background: rgba(255, 255, 255, 0.15);
+            border-radius: 15px;
+            padding: 20px;
+            backdrop-filter: blur(10px);
+        }
+
+        .prizes-title {
+            font-size: 20px;
+            font-weight: bold;
+            margin-bottom: 15px;
+        }
+
+        .prize-item {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 10px;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .prize-item:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateX(5px);
+        }
+
+        .prize-info {
+            flex: 1;
+        }
+
+        .prize-name {
+            font-size: 16px;
+            font-weight: bold;
+            margin-bottom: 3px;
+        }
+
+        .prize-date {
+            font-size: 12px;
+            opacity: 0.7;
+        }
+
+        .prize-arrow {
+            font-size: 20px;
+            opacity: 0.5;
+        }
+
+        .prizes-empty {
+            text-align: center;
+            padding: 30px 20px;
+            opacity: 0.6;
+        }
+
+        /* NAVIGATION */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: rgba(0, 0, 0, 0.3);
+            backdrop-filter: blur(10px);
+            display: flex;
+            justify-content: space-around;
+            padding: 10px 0;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .nav-item {
+            flex: 1;
+            text-align: center;
+            padding: 10px;
+            cursor: pointer;
+            transition: all 0.3s;
+            border: none;
+            background: none;
+            color: rgba(255, 255, 255, 0.6);
+        }
+
+        .nav-item.active {
+            color: white;
+        }
+
+        .nav-icon {
+            font-size: 24px;
+            display: block;
+            margin-bottom: 3px;
+        }
+
+        .nav-label {
+            font-size: 11px;
+        }
+
+        /* MODAL */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 40px;
+            border-radius: 20px;
+            text-align: center;
+            max-width: 400px;
+            width: 90%;
+            animation: modalShow 0.3s ease;
+        }
+
+        @keyframes modalShow {
+            from {
+                opacity: 0;
+                transform: scale(0.8);
+            }
+
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        .prize-icon-big {
+            font-size: 80px;
+            margin-bottom: 20px;
+            animation: prizeShow 0.5s ease;
+        }
+
+        @keyframes prizeShow {
+            0% {
+                transform: scale(0) rotate(0deg);
+            }
+
+            50% {
+                transform: scale(1.2) rotate(180deg);
+            }
+
+            100% {
+                transform: scale(1) rotate(360deg);
+            }
+        }
+
+        .prize-title {
+            font-size: 28px;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .prize-subtitle {
+            font-size: 18px;
+            color: #ffd700;
+            margin-bottom: 30px;
+        }
+
+        .btn {
+            background: white;
+            color: #667eea;
+            border: none;
+            padding: 12px 40px;
+            border-radius: 50px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn:hover {
+            transform: scale(1.05);
+        }
+
+        /* TOPUP MODAL */
+        .topup-options {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .topup-option {
+            background: rgba(255, 255, 255, 0.2);
+            padding: 15px;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s;
+            border: 2px solid transparent;
+        }
+
+        .topup-option:hover,
+        .topup-option.selected {
+            background: rgba(255, 255, 255, 0.3);
+            border-color: #ffd700;
+        }
+
+        .topup-amount {
+            font-size: 20px;
+            font-weight: bold;
+            color: #ffd700;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- HEADER -->
+    <div class="header">
+        <h1>🎁 Gift Case</h1>
+        <div class="balance-display">⭐ <span id="balanceHeader">0</span> Stars</div>
+    </div>
+
+    <!-- CONTENT -->
+    <div class="content">
+        <!-- TAB 1: CASES -->
+        <div id="casesTab" class="tab-content active">
+            <div class="cases-grid" id="casesGrid"></div>
+        </div>
+
+        <!-- TAB 2: NEWS -->
+        <div id="newsTab" class="tab-content">
+            <div class="news-list" id="newsList">
+                <!-- NEWS ITEMS - SIZ QO'SHASIZ -->
+
+
+
+
+
+
+
+
+
+
+                <div class="news-list" id="newsList">
+                    <div class="news-item">
+                        <div class="news-date">23.12.2025</div>
+                        <div class="news-title">🎉 Yangi qutilar qo'shildi!</div>
+                        <div class="news-text">Endi 1000 Stars gacha qutilar mavjud. Omad!</div>
+                    </div>
+
+
+                    <div class="news-empty">
+                        📰 Yangiliklar tez orada qo'shiladi!
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB 3: PROFILE -->
+            <div id="profileTab" class="tab-content">
+                <div class="profile-header">
+                    <div class="profile-avatar">👤</div>
+                    <div class="profile-name" id="profileName">Yuklanmoqda...</div>
+                    <div class="profile-username" id="profileUsername">@username</div>
+                </div>
+
+                <div class="balance-card">
+                    <div class="balance-title">Mening balansim</div>
+                    <div class="balance-amount">⭐ <span id="balanceProfile">0</span> Stars</div>
+                    <button class="topup-btn" onclick="showTopupModal()">💰 Balans to'ldirish</button>
+                </div>
+
+                <div class="prizes-section">
+                    <div class="prizes-title">🏆 Yutilgan sovg'alar</div>
+                    <div id="prizesList"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- BOTTOM NAVIGATION -->
+        <div class="bottom-nav">
+            <button class="nav-item active" onclick="switchTab('cases')">
+                <span class="nav-icon">🎁</span>
+                <span class="nav-label">Qutilar</span>
+            </button>
+            <button class="nav-item" onclick="switchTab('news')">
+                <span class="nav-icon">📰</span>
+                <span class="nav-label">Yangiliklar</span>
+            </button>
+            <button class="nav-item" onclick="switchTab('profile')">
+                <span class="nav-icon">👤</span>
+                <span class="nav-label">Profilim</span>
+            </button>
+        </div>
+
+        <!-- PRIZE MODAL -->
+        <div class="modal" id="prizeModal">
+            <div class="modal-content">
+                <div class="prize-icon-big" id="prizeIconBig">🎁</div>
+                <div class="prize-title" id="prizeTitle">Tabriklaymiz!</div>
+                <div class="prize-subtitle" id="prizeSubtitle">Siz yutdingiz</div>
+                <button class="btn" onclick="closePrizeModal()">Ajoyib!</button>
+            </div>
+        </div>
+
+        <!-- TOPUP MODAL -->
+        <div class="modal" id="topupModal">
+            <div class="modal-content">
+                <div class="prize-title">💰 Balans to'ldirish</div>
+                <div style="margin-bottom: 20px; opacity: 0.8;">Qancha Stars xarid qilmoqchisiz?</div>
+                <div class="topup-options">
+                    <div class="topup-option" onclick="selectTopup(10)">
+                        <div class="topup-amount">⭐ 10</div>
+                    </div>
+                    <div class="topup-option" onclick="selectTopup(50)">
+                        <div class="topup-amount">⭐ 50</div>
+                    </div>
+                    <div class="topup-option" onclick="selectTopup(100)">
+                        <div class="topup-amount">⭐ 100</div>
+                    </div>
+                    <div class="topup-option" onclick="selectTopup(500)">
+                        <div class="topup-amount">⭐ 500</div>
+                    </div>
+                </div>
+                <button class="btn" onclick="processTopup()" style="margin-right: 10px;">Xarid qilish</button>
+                <button class="btn" onclick="closeTopupModal()">Bekor qilish</button>
+            </div>
+        </div>
+
+        <script>
+            let tg = window.Telegram.WebApp;
+            tg.expand();
+
+            // USER DATA
+            let userData = {
+                id: tg.initDataUnsafe?.user?.id || 'demo',
+                firstName: tg.initDataUnsafe?.user?.first_name || 'Foydalanuvchi',
+                username: tg.initDataUnsafe?.user?.username || 'username',
+                photoUrl: tg.initDataUnsafe?.user?.photo_url || null
+            };
+
+            // CASES DATA - HAR BIRIDA 10 TA JOY
+            const cases = [
+                {
+                    id: 1,
+                    price: 15,
+                    icon: "📦",
+                    name: "15 Stars",
+                    prizes: [
+                        "🎁 15 talik teddy",
+                        "🎁 15 talik teddy",
+                        "🎁 15 talik teddy",
+                        "🎁 15 talik teddy",
+                        "🎁 15 talik teddy",
+                        "🎁 15 talik teddy",
+                        "🎁 15 talik teddy",
+                        "🎁 15 talik teddy",
+                        "🎁 15 talik teddy",
+                        "🎁 15 talik teddy"
+                    ]
+                },
+                {
+                    id: 2,
+                    price: 39,
+                    icon: "🎁",
+                    name: "39 Stars",
+                    prizes: [
+                        "💎 25 talik so'vga",
+                        "💎 25 talik so'vga",
+                        "💎 25 talik so'vga",
+                        "💎 25 talik so'vga",
+                        "💎 25 talik so'vga",
+                        "💎 25 talik so'vga",
+                        "💎 25 talik so'vga",
+                        "💎 25 talik so'vga",
+                        "💎 25 talik so'vga",
+                        "💎 25 talik so'vga"
+                    ]
+                },
+                {
+                    id: 3,
+                    price: 50,
+                    icon: "💎",
+                    name: "50 Stars",
+                    prizes: [
+                        "⭐ 25 talik + 15 talik so'vg'a",
+                        "⭐ 25 talik + 15 talik so'vg'a",
+                        "⭐ 25 talik + 15 talik so'vg'a",
+                        "⭐ 25 talik + 15 talik so'vg'a",
+                        "⭐ 25 talik + 15 talik so'vg'a",
+                        "⭐ 25 talik + 15 talik so'vg'a",
+                        "⭐ 25 talik + 15 talik so'vg'a",
+                        "⭐ 25 talik + 15 talik so'vg'a",
+                        "⭐ 25 talik + 15 talik so'vg'a",
+                        "⭐ 25 talik + 15 talik so'vg'a"
+                    ]
+                },
+                {
+                    id: 4,
+                    price: 75,
+                    icon: "🏆",
+                    name: "75 Stars",
+                    prizes: [
+                        "🌟 50 talik + 15 talik so'vg'a",
+                        "🌟 50 talik + 15 talik so'vg'a",
+                        "🌟 50 talik + 15 talik so'vg'a",
+                        "🌟 50 talik + 15 talik so'vg'a",
+                        "🌟 50 talik + 15 talik so'vg'a",
+                        "🌟 50 talik + 15 talik so'vg'a",
+                        "🌟 50 talik + 15 talik so'vg'a",
+                        "🌟 50 talik + 15 talik so'vg'a",
+                        "🌟 50 talik + 15 talik so'vg'a",
+                        "🌟 50 talik + 15 talik so'vg'a"
+                    ]
+                },
+                {
+                    id: 5,
+                    price: 100,
+                    icon: "👑",
+                    name: "100 Stars",
+                    prizes: [
+                        "💰 50 talik + 25 talik so'vg'a",
+                        "💰 50 talik + 25 talik so'vg'a",
+                        "💰 50 talik + 25 talik so'vg'a",
+                        "💰 50 talik + 25 talik so'vg'a",
+                        "💰 50 talik + 25 talik so'vg'a",
+                        "💰 50 talik + 25 talik so'vg'a",
+                        "💰 50 talik + 25 talik so'vg'a",
+                        "💰 50 talik + 25 talik so'vg'a",
+                        "💰 50 talik + 25 talik so'vg'a",
+                        "💰 50 talik + 25 talik so'vg'a"
+                    ]
+                },
+                {
+                    id: 6,
+                    price: 200,
+                    icon: "🎯",
+                    name: "200 Stars",
+                    prizes: [
+                        "🔥 100 talik + 50 talik so'vg'a",
+                        "🔥 100 talik + 50 talik so'vg'a",
+                        "🔥 100 talik + 50 talik so'vg'a",
+                        "🔥 100 talik + 50 talik so'vg'a",
+                        "🔥 100 talik + 50 talik so'vg'a",
+                        "🔥 100 talik + 50 talik so'vg'a",
+                        "🔥 100 talik + 50 talik so'vg'a",
+                        "🔥 100 talik + 50 talik so'vg'a",
+                        "🔥 100 talik + 50 talik so'vg'a",
+                        "🔥 200 talik + 15 talik so'vg'a"
+                    ]
+                },
+                {
+                    id: 7,
+                    price: 400,
+                    icon: "🚀",
+                    name: "400 Stars",
+                    prizes: [
+                        "💫 3 ta 100 talik + 25 talik so'vg'a",
+                        "💫 3 ta 100 talik + 25 talik so'vg'a",
+                        "💫 3 ta 100 talik + 25 talik so'vg'a",
+                        "💫 3 ta 100 talik + 25 talik so'vg'a",
+                        "💫 3 ta 100 talik + 25 talik so'vg'a",
+                        "💫 3 ta 100 talik + 25 talik so'vg'a",
+                        "💫 3 ta 100 talik + 25 talik so'vg'a",
+                        "💫 3 ta 100 talik + 25 talik so'vg'a",
+                        "💫 3 ta 100 talik + 25 talik so'vg'a",
+                        "💫 3 ta 100 talik + 25 talik so'vg'a"
+                    ]
+                },
+                {
+                    id: 8,
+                    price: 600,
+                    icon: "💝",
+                    name: "600 Stars",
+                    prizes: [
+                        "🎪 nft ramen",
+                        "🎪 nft ramen",
+                        "🎪 nft ramen",
+                        "🎪 nft ramen",
+                        "🎪 nft ramen",
+                        "🎪 nft ramen",
+                        "🎪 nft ramen",
+                        "🎪 nft ramen",
+                        "🎪 nft ramen",
+                        "🎪 nft ramen + 25 talik so'vg'a"
+                    ]
+                },
+                {
+                    id: 9,
+                    price: 800,
+                    icon: "⚡",
+                    name: "800 Stars",
+                    prizes: [
+                        "🎨 nft ice cream + 50 talik so'vg'a",
+                        "🎨 nft ice cream + 50 talik so'vg'a",
+                        "🎨 nft ice cream + 50 talik so'vg'a",
+                        "🎨 nft ice cream + 50 talik so'vg'a",
+                        "🎨 nft ice cream + 50 talik so'vg'a",
+                        "🎨 nft ice cream + 50 talik so'vg'a",
+                        "🎨 nft ice cream + 50 talik so'vg'a",
+                        "🎨 nft ice cream + 50 talik so'vg'a",
+                        "🎨 nft ice cream + 50 talik so'vg'a",
+                        "🎨 nft ice cream + 50 talik so'vg'a"
+                    ]
+                },
+                {
+                    id: 10,
+                    price: 1000,
+                    icon: "🌈",
+                    name: "1000 Stars",
+                    prizes: [
+                        "🏅 nft snoop dog + 100 talik",
+                        "🏅 nft snoop dog + 100 talik",
+                        "🏅 nft snoop dog + 100 talik",
+                        "🏅 nft snoop dog + 100 talik",
+                        "🏅 nft snoop dog + 100 talik",
+                        "🏅 nft snoop dog + 100 talik",
+                        "🏅 nft snoop dog + 100 talik",
+                        "🏅 nft snoop dog + 100 talik",
+                        "🏅 nft snoop dog + 100 talik",
+                        "🏅 nft snoop dog + nft ice cream"
+                    ]
+                }
+            ];
+
+            // LOCAL STORAGE
+            let balance = parseInt(localStorage.getItem('balance_' + userData.id) || '0');
+            let wonPrizes = JSON.parse(localStorage.getItem('prizes_' + userData.id) || '[]');
+            let selectedTopupAmount = 0;
+
+            // INIT
+            function init() {
+                loadProfile();
+                renderCases();
+                updateBalance();
+                renderPrizes();
+            }
+
+            // LOAD PROFILE
+            function loadProfile() {
+                document.getElementById('profileName').textContent = userData.firstName;
+                document.getElementById('profileUsername').textContent = '@' + userData.username;
+            }
+
+            // RENDER CASES
+            function renderCases() {
+                const grid = document.getElementById('casesGrid');
+                grid.innerHTML = cases.map(c => `
+                <div class="case-card" onclick="openCase(${c.id})">
+                    <div class="case-icon">${c.icon}</div>
+                    <div class="case-price">⭐ ${c.price}</div>
+                    <div class="case-name">${c.name}</div>
+                </div>
+            `).join('');
+            }
+
+            // OPEN CASE
+            function openCase(caseId) {
+                const caseItem = cases.find(c => c.id === caseId);
+
+                if (balance < caseItem.price) {
+                    tg.showAlert('⭐ Stars yetarli emas! Balans to\'ldiring.');
+                    tg.HapticFeedback.notificationOccurred('error');
+                    return;
+                }
+ 
+                // Deduct balance
+                balance -= caseItem.price;
+
+                // Random prize
+                const randomPrize = caseItem.prizes[Math.floor(Math.random() * caseItem.prizes.length)];
+
+                // Add to inventory
+                wonPrizes.push({
+                    name: randomPrize,
+                    icon: randomPrize.split(' ')[0],
+                    date: new Date().toLocaleDateString('uz-UZ'),
+                    casePrice: caseItem.price
+                });
+
+                saveData();
+                showPrize(randomPrize, caseItem.price);
+
+                tg.HapticFeedback.notificationOccurred('success');
+            }
+
+            // SHOW PRIZE
+            function showPrize(prize, casePrice) {
+                const icon = prize.split(' ')[0];
+                const name = prize.substring(prize.indexOf(' ') + 1);
+
+                document.getElementById('prizeIconBig').textContent = icon;
+                document.getElementById('prizeTitle').textContent = name;
+                document.getElementById('prizeSubtitle').textContent = `${casePrice} Stars qutidan!`;
+                document.getElementById('prizeModal').classList.add('active');
+            }
+
+            function closePrizeModal() {
+                document.getElementById('prizeModal').classList.remove('active');
+                updateBalance();
+                renderPrizes();
+            }
+
+            // RENDER PRIZES
+            function renderPrizes() {
+                const list = document.getElementById('prizesList');
+                if (wonPrizes.length === 0) {
+                    list.innerHTML = '<div class="prizes-empty">🎁 Hali sovg\'alar yo\'q.<br>Quti ochib yutib oling!</div>';
+                } else {
+                    list.innerHTML = wonPrizes.slice().reverse().map((prize, i) => `
+                    <div class="prize-item" onclick="openTelegramProfile()">
+                        <div class="prize-info">
+                            <div class="prize-name">${prize.icon} ${prize.name}</div>
+                            <div class="prize-date">${prize.date} • ${prize.casePrice} ⭐</div>
+                        </div>
+                        <div class="prize-arrow">→</div>
+                    </div>
+                `).join('');
+                }
+            }
+
+            // OPEN TELEGRAM PROFILE
+            function openTelegramProfile() {
+                const telegramUrl = `https://t.me/${userData.username}`;
+                tg.openLink(telegramUrl);
+            }
+
+            // UPDATE BALANCE
+            function updateBalance() {
+                document.getElementById('balanceHeader').textContent = balance;
+                document.getElementById('balanceProfile').textContent = balance;
+            }
+
+            // SAVE DATA
+            function saveData() {
+                localStorage.setItem('balance_' + userData.id, balance.toString());
+                localStorage.setItem('prizes_' + userData.id, JSON.stringify(wonPrizes));
+            }
+
+            // TAB SWITCHING
+            function switchTab(tab) {
+                document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+                document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+
+                if (tab === 'cases') {
+                    document.getElementById('casesTab').classList.add('active');
+                    document.querySelectorAll('.nav-item')[0].classList.add('active');
+                } else if (tab === 'news') {
+                    document.getElementById('newsTab').classList.add('active');
+                    document.querySelectorAll('.nav-item')[1].classList.add('active');
+                } else if (tab === 'profile') {
+                    document.getElementById('profileTab').classList.add('active');
+                    document.querySelectorAll('.nav-item')[2].classList.add('active');
+                    renderPrizes();
+                }
+            }
+
+            // TOPUP MODAL
+            function showTopupModal() {
+                document.getElementById('topupModal').classList.add('active');
+            }
+
+            function closeTopupModal() {
+                document.getElementById('topupModal').classList.remove('active');
+                selectedTopupAmount = 0;
+            }
+
+            function selectTopup(amount) {
+                selectedTopupAmount = amount;
+                document.querySelectorAll('.topup-option').forEach(opt => {
+                    opt.classList.remove('selected');
+                });
+                event.target.closest('.topup-option').classList.add('selected');
+            }
+
+            function processTopup() {
+                if (selectedTopupAmount === 0) {
+                    tg.showAlert('Miqdorni tanlang!');
+                    return;
+                }
+
+                // TELEGRAM STARS INVOICE
+                // BU QISM BACKEND TALAB QILADI
+                tg.showAlert(`${selectedTopupAmount} Stars xarid qilish uchun to'lov tizimi botga ulangan bo'lishi kerak. Backend qo'shing.`);
+
+                // DEMO UCHUN: balansni oshirish
+                balance += selectedTopupAmount;
+                saveData();
+                updateBalance();
+                closeTopupModal();
+
+                tg.HapticFeedback.notificationOccurred('success');
+            }
+
+            // START
+            init();
+        </script>
+</body>
+
+</html>
